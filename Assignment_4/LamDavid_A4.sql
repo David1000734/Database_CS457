@@ -4,7 +4,7 @@ CREATE DATABASE LamDavid;
 
 USE LamDavid;
 
-/* Drop and create tables */
+/****** Drop and create tables ******/
 DROP TABLE IF EXISTS lives;
 CREATE TABLE lives
   (person_id SMALLINT(4) ZEROFILL,
@@ -35,10 +35,10 @@ DROP TABLE IF EXISTS manages;
 CREATE TABLE manages
   (person_name VARCHAR(30),
   manager_name VARCHAR(30),
-  CONSTRAINT manages PRIMARY KEY (person_name)
+  CONSTRAINT managers PRIMARY KEY (person_name)
 );
 
-/* Insert values into tables */
+/****** Insert values into tables ******/
 
 -- Insert values into the lives table
 INSERT INTO lives
