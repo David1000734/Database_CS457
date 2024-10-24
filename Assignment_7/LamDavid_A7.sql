@@ -21,12 +21,60 @@ DROP VIEW IF EXISTS avg_city_salary;
 -- Previous table has every one listed already,
 -- Simply find the average and order by city.
 CREATE VIEW avg_city_salary AS
-	SELECT city, AVG(salary)
+	SELECT city, AVG(salary) AS salary
 	FROM workers_by_city AS tb
 	GROUP BY city
 	ORDER BY salary DESC
 ;
 SELECT * FROM avg_city_salary;
+
+-- Part 2: Using Cursor
+-- Go through avg_city_salary to display
+-- "Average salary in <city> is <salary>.
+-- https://www.mysqltutorial.org/mysql-stored-procedure/sql-cursor-in-stored-procedures/
+-- https://www.sqlservertutorial.net/sql-server-stored-procedures/sql-server-cursor/
+DROP PROCEDURE IF EXISTS find_avg_salarys;
+DELIMITER $$
+CREATE PROCEDURE find_avg_salarys (
+	INOUT salary_list TEXT
+)
+
+BEGIN
+	DECLARE done BOOL DEFAULT FALSE;
+	DECLARE c VARCHAR(50) DEFAULT "";
+	DECLARE s INT DEFAULT 0;
+
+	DECLARE cursor_avg_salary CURSOR FOR
+		SELECT city, salary FROM avg_city_salary;
+	
+	DECLARE CONTINUE HANDLER
+		FOR NOT FOUND SET done = TRUE;
+	
+	OPEN cursor_avg_salary;
+
+	FETCH NEXT FROM cursor_avg_salary INTO
+		c,
+		s
+	;
+	
+	process_loop : LOOP
+		SET salary_list = CONCAT("Average salary in ", c, " is ", s);
+		SELECT salary_list;
+
+		IF done = TRUE THEN
+			LEAVE process_loop;
+		END IF;
+		
+		FETCH NEXT FROM cursor_avg_salary INTO
+			c,
+			s
+		;
+	END loop;
+	
+	CLOSE cursor_avg_salary;
+END$$
+
+DELIMITER ;
 
 
 SELECT * FROM lives;
