@@ -34,6 +34,7 @@ SELECT * FROM avg_city_salary;
 -- https://www.mysqltutorial.org/mysql-stored-procedure/sql-cursor-in-stored-procedures/
 -- https://www.sqlservertutorial.net/sql-server-stored-procedures/sql-server-cursor/
 DROP PROCEDURE IF EXISTS find_avg_salarys;
+
 DELIMITER $$
 CREATE PROCEDURE find_avg_salarys (
 	INOUT salary_list TEXT
@@ -75,7 +76,31 @@ BEGIN
 END$$
 
 DELIMITER ;
+-- CALL `find_avg_salarys`(@salary_list);
+-- SELECT @salary_list;
 
+-- Part 3 Create change_city procedure
+-- Function will go into the lives table and change
+-- the current city to new_city for those that
+-- matches the person_id
+DROP PROCEDURE IF EXISTS change_city;
+
+DELIMITER $$
+CREATE PROCEDURE change_city (
+	IN person_id INTEGER,
+	IN new_city VARCHAR(30)
+)
+BEGIN
+	UPDATE lives
+		SET city = new_city
+		WHERE lives.person_id = person_id
+	;
+END$$
+DELIMITER ;
+CALL `change_city`(1, "Chicago");
+SELECT * FROM lives;
+
+CALL `change_city`(1, "Las Vegas");
 
 SELECT * FROM lives;
 SELECT * FROM works;
