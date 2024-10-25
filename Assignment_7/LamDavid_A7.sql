@@ -37,12 +37,13 @@ DROP PROCEDURE IF EXISTS find_avg_salarys;
 
 DELIMITER $$
 CREATE PROCEDURE find_avg_salarys (
-	INOUT salary_list TEXT
+	OUT salary_list TEXT
 )
 
 BEGIN
 	DECLARE done BOOL DEFAULT FALSE;
 	DECLARE c VARCHAR(50) DEFAULT "";
+	DECLARE temp_string TEXT DEFAULT "";
 	DECLARE s INT DEFAULT 0;
 
 	DECLARE cursor_avg_salary CURSOR FOR
@@ -59,25 +60,25 @@ BEGIN
 	;
 	
 	process_loop : LOOP
-		SET salary_list = CONCAT("Average salary in ", c, " is ", s);
-		SELECT salary_list;
-
 		IF done = TRUE THEN
 			LEAVE process_loop;
 		END IF;
-		
+
+		SET temp_string = CONCAT(temp_string, "Average salary in ", c, " is ", s, ".\n");
+
 		FETCH NEXT FROM cursor_avg_salary INTO
 			c,
 			s
 		;
 	END loop;
+	SET salary_list = temp_string;
 	
 	CLOSE cursor_avg_salary;
 END$$
 
 DELIMITER ;
--- CALL `find_avg_salarys`(@salary_list);
--- SELECT @salary_list;
+CALL `find_avg_salarys`(@salary_list);
+SELECT @salary_list AS print;
 
 -- Part 3 Create change_city procedure
 -- Function will go into the lives table and change
